@@ -4,14 +4,19 @@ import {useState} from "react";
 
 function Blog(){
 
-    const[title,setTitle]=useState("");
-    const[content,setContent]=useState("");
+    //const[title,setTitle]=useState("");
+    //const[content,setContent]=useState("");
+
+    const[formData,setFormData]=useState({title:"", content:""})
     const[blogs,setBlogs]=useState([])
 
     //Passing the synthetic event as argument to stop refreshing the page on submit
     function handleSubmit(e){
         e.preventDefault();
-        setBlogs([{title,content},...blogs])
+        setBlogs([{title:formData.title,content:formData.content},...blogs])
+        // setTitle("");
+        // setContent("");
+        setFormData({title:"",content:""})
     }
     return(
         <>
@@ -23,8 +28,10 @@ function Blog(){
                 <Row label="Title">
                     <input className="input"
                            placeholder="Enter the title here..."
-                           value={title}
-                           onChange={(e)=>setTitle(e.target.value)}
+                           //value={title}
+                           value={formData.title}
+                          // onChange={(e)=>setTitle(e.target.value)}
+                           onChange={(e)=>setFormData({title:e.target.value,content:formData.content})}
                     />
                 </Row>
 
@@ -32,8 +39,10 @@ function Blog(){
                 <Row label="Content">
                     <textarea className="input content"
                               placeholder="Content goes here..."
-                              value={content}
-                              onChange={(e)=>setContent(e.target.value)}
+                              //value={content}
+                              value={formData.content}
+                             // onChange={(e)=>setContent(e.target.value)}
+                              onChange={(e)=>setFormData({title:formData.title,content:e.target.value})}
                     />          
                 </Row>
 
@@ -44,10 +53,10 @@ function Blog(){
         <hr/>
         {/* Section where submitted blogs will be displayed */}
         <h2>Blog</h2>
-        {blogs.map((blogs,i)=>(
+        {blogs.map((blog,i)=>(
             <div className="blog" key={i}>
-                 <h3>{blogs.title}</h3>
-                 <p>{blogs.content}</p>
+                 <h3>{blog.title}</h3>
+                 <p>{blog.content}</p>
             </div>
         ))}
         </>
