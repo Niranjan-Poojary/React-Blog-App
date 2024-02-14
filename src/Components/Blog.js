@@ -6,10 +6,12 @@ function Blog(){
 
     const[title,setTitle]=useState("");
     const[content,setContent]=useState("");
+    const[blogs,setBlogs]=useState([])
 
     //Passing the synthetic event as argument to stop refreshing the page on submit
     function handleSubmit(e){
         e.preventDefault();
+        setBlogs([{title,content},...blogs])
     }
     return(
         <>
@@ -42,8 +44,12 @@ function Blog(){
         <hr/>
         {/* Section where submitted blogs will be displayed */}
         <h2>Blog</h2>
-        <h3>{title}</h3>
-        <p>{content}</p>
+        {blogs.map((blogs,i)=>(
+            <div className="blog" key={i}>
+                 <h3>{blogs.title}</h3>
+                 <p>{blogs.content}</p>
+            </div>
+        ))}
         </>
          
         
