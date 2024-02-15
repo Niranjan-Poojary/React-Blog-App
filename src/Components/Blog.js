@@ -1,6 +1,6 @@
 //Blogging App using Hooks
 
-import {useState} from "react";
+import {useState,useRef,useEffect} from "react";
 
 function Blog(){
 
@@ -9,6 +9,19 @@ function Blog(){
 
     const[formData,setFormData]=useState({title:"", content:""})
     const[blogs,setBlogs]=useState([])
+    const titleRef=useRef(null)
+
+    useEffect(()=>{
+        titleRef.current.focus()
+    },[])
+
+    useEffect(()=>{
+        if(blogs.length && blogs[0].title){
+            document.title = blogs[0].title;
+        }else{
+            document.title = "No blogs"
+        }
+    },[blogs])
 
     //Passing the synthetic event as argument to stop refreshing the page on submit
     function handleSubmit(e){
@@ -17,7 +30,12 @@ function Blog(){
         // setTitle("");
         // setContent("");
         setFormData({title:"",content:""})
+        titleRef.current.focus();
     }
+
+    function removeBlog(i){
+        setBlogs(blogs.filter((blog,index)=> i!==index)
+        )}
     return(
         <>
         <h1>Write a Blog</h1>
@@ -31,6 +49,7 @@ function Blog(){
                            //value={title}
                            value={formData.title}
                           // onChange={(e)=>setTitle(e.target.value)}
+                          ref={titleRef}
                            onChange={(e)=>setFormData({title:e.target.value,content:formData.content})}
                     />
                 </Row>
@@ -39,6 +58,7 @@ function Blog(){
                 <Row label="Content">
                     <textarea className="input content"
                               placeholder="Content goes here..."
+                              required
                               //value={content}
                               value={formData.content}
                              // onChange={(e)=>setContent(e.target.value)}
@@ -57,7 +77,12 @@ function Blog(){
             <div className="blog" key={i}>
                  <h3>{blog.title}</h3>
                  <p>{blog.content}</p>
+
+                    <div className="blog-btn">
+                        <button onClick={()=>removeBlog(i)} className="btn remove">Delete</button>
+                    </div>
             </div>
+            
         ))}
         </>
          
