@@ -1,6 +1,10 @@
 //Blogging App using Hooks
 
 import {useState,useRef,useEffect} from "react";
+import {db} from "../firebaseInit";
+
+import { collection, addDoc,doc, setDoc,getDocs, onSnapshot, deleteDoc } from "firebase/firestore"; 
+
 
 function Blog(){
 
@@ -23,19 +27,70 @@ function Blog(){
         }
     },[blogs])
 
+    
+    useEffect(()=>{
+
+        // async function fetchData(){
+        //     const snapShot=await getDocs(collection(db,"blogs"));
+        //     console.log(snapShot);
+
+        //     const blogs = snapShot.docs.map((doc)=>{
+        //         return{
+        //             id:doc.id,
+        //             ...doc.data()
+        //         }
+        //     })
+        //     console.log(blogs);
+        //     setBlogs(blogs);
+            
+        // }
+        // fetchData();
+
+        //To get real time update
+
+        const unsub = onSnapshot(collection(db,"blogs"),(snapShot)=>{
+            const blogs = snapShot.docs.map((doc)=>{
+                return{
+                    id:doc.id,
+                    ...doc.data()
+                }
+            })
+            console.log(blogs);
+            setBlogs(blogs);
+                
+            
+        })
+
+    },[]);
+
     //Passing the synthetic event as argument to stop refreshing the page on submit
-    function handleSubmit(e){
+   async function handleSubmit(e){
         e.preventDefault();
-        setBlogs([{title:formData.title,content:formData.content},...blogs])
+        titleRef.current.focus();
+       // setBlogs([{title:formData.title,content:formData.content},...blogs])
+
+        // Add a new document with a generated id.
+             const docRef=doc(collection(db, "blogs"))
+             await setDoc(docRef, {
+                title: formData.title,
+                content: formData.content,
+                createdOn:new Date()
+            });
+            //console.log("Document written with ID: ", docRef.id);
         // setTitle("");
         // setContent("");
         setFormData({title:"",content:""})
-        titleRef.current.focus();
+        
     }
 
-    function removeBlog(i){
-        setBlogs(blogs.filter((blog,index)=> i!==index)
-        )}
+    async function removeBlog(id){
+        //setBlogs(blogs.filter((blog,index)=> i!==index)
+        const docRef = doc(db,"blogs",id);
+       await deleteDoc(docRef);
+
+
+       // )
+    }
     return(
         <>
         <h1>Write a Blog</h1>
@@ -79,7 +134,7 @@ function Blog(){
                  <p>{blog.content}</p>
 
                     <div className="blog-btn">
-                        <button onClick={()=>removeBlog(i)} className="btn remove">Delete</button>
+                        <button onClick={()=>removeBlog(blog.id)} className="btn remove">Delete</button>
                     </div>
             </div>
             
